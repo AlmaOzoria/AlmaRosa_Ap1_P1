@@ -1,5 +1,6 @@
 using AlmaRosa_Ap1_P1.Components;
 using AlmaRosa_Ap1_P1.DAL;
+using AlmaRosa_Ap1_P1.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,8 @@ builder.Services.AddRazorComponents()
 
 var ConStr = builder.Configuration.GetConnectionString("ConStr");
 builder.Services.AddDbContext<Contexto>(Options => Options.UseSqlite(ConStr));
+
+builder.Services.AddScoped<RegistroServices>();
 
 var app = builder.Build();
 
