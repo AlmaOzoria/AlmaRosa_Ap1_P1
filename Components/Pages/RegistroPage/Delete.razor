@@ -1,5 +1,74 @@
-﻿<h3>Delete</h3>
+﻿@page "/Prestamo/Delete/"
+@page "/Prestamo/Delete/{PrestamoId:int}"
+@inject PrestamoServices prestamoService
+@inject NavigationManager navigationManager
+@inject IJSRuntime jsRuntime
+
+@rendermode InteractiveServer
+
+<h3>Eliminar Prestamo</h3>
+
+@if (Prestamo != null)
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Detalles de Prestamo</h5>
+            <dl class="row">
+                <dt class="col-sm-3">PrioridadId:</dt>
+                <dd class="col-sm-9">@Prestamo.Result?.PrestamoId</dd>
+
+                <dt class="col-sm-3">Descripción:</dt>
+                <dd class="col-sm-9">@Prestamo.Result?.Deudor</dd>
+
+                <dt class="col-sm-3">Costo:</dt>
+                <dd class="col-sm-9">@Prestamo.Result?.Concepto</dd>
+
+                <dt class="col-sm-3">Ganancia:</dt>
+                <dd class="col-sm-9">@Prestamo.Result?.Monto</dd>
+
+
+            </dl>
+
+            <button type="button" class="btn btn-danger" @onclick="Eliminar">Eliminar</button>
+            <a href="/Prestamo/Index" class="btn btn-primary">
+                <span>Volver </span> <i class="bi bi-arrow-left mt-3" />
+            </a>
+        </div>
+
+    </div>
+
+
+}
+else
+{
+    <p class="alert alert-danger">No se encontró la ...</p>
+}
+
 
 @code {
+    [Parameter]
+    public int PrestamoId { get; set; }
 
+    public Task<Prestamo?> Prestamo { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Prestamo = prestamoService.Buscar(PrestamoId);
+        await Prestamo;
+    }
+
+    public async Task Eliminar()
+    {
+        var prestamo = await Prestamo;
+        if (prestamo != null)
+        {
+            var eliminado = prestamoService.Eliminar(prestamo.PrestamoId);
+            Volver();
+        }
+    }
+
+    public void Volver()
+    {
+        navigationManager.NavigateTo("/Prestamo/Index");
+    }
 }
