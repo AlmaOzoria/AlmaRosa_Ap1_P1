@@ -1,5 +1,134 @@
-﻿<h3>Create</h3>
+﻿@page "/Prestamo/Create"
+@page "/Prestamo/Create/{PrestamoId:int}"
+@inject PrestamoServices prestamoService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<EditForm Model="Prestamo" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h3>Crear Prestamo</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-6 col-xl-4">
+                        <label for="PrestamoId">Prestamo Id:</label>
+                        <div class="id-input">
+                            Prestamo.PrestamoId" class="form-control" aria-describedby="BotonBuscar" />
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="Deudor">Deudor:</label>
+                    <InputText @bind-Value="Prestamo.Deudor" class="form-control" />
+                    <ValidationMessage For="@(() => Prestamo.Deudor)" />
+                </div>
+                <div class="mb-3">
+                    <label for="Costo" class="form-label">Concepto:</label>
+                    <InputText @bind-Value="Prestamo.Concepto" class="form-control" />
+                    <ValidationMessage For="@(() => Prestamo.Concepto)" />
+                </div>
+                <div class="mb-3">
+                    <label for="Monto" class="form-label">Monto:</label>
+                    <InputNumber @bind-Value="Prestamo.Monto" class="form-control" />
+                    <ValidationMessage For="@(() => Prestamo.Monto)" />
+                </div>
+                
+
+                @if (Existe)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        Ya existe un Prestamo con esa descripción
+                    </div>
+                }
+                @if (Guardo)
+                {
+                    <p class="text-success">
+                        El  prestamo se guardó exitosamente
+                    </p>
+                }
+                @if (Elimino)
+                {
+                    <p class="text-success">
+                        El prestamo se eliminó exitosamente
+                    </p>
+                }
+            </div>
+            <div class="card-footer bg-light d-flex justify-content-center mt-3">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary " @onclick="Nuevo"><span class="bi bi-floppy mt-3"></span> Nuevo </button>
+                    <button type="button" class="btn btn-primary" @onclick="async () => await Guardar()">
+                        <span>Guardar <i class="bi bi-floppy mt-3" /></span>
+                    </button>
+                    <a href="/Prestamo/Index" class="btn btn-primary">
+                        <span>Volver</span> <i class="bi bi-arrow-left mt-3" />
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
 
 @code {
+    [Parameter]
+    public int PrestamoId { get; set; }
+    public Prestamo Prestamo { get; set; } = new Prestamo();
+    public string Mensaje { get; set; } = string.Empty;
+    public bool Existe { get; set; } = false;
+    public bool Guardo { get; set; } = false;
+    public bool Elimino { get; set; } = false;
+    public bool Encontro { get; set; } = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (PrestamoId > 0)
+        {
+            Prestamo.PrestamoId = PrestamoId;
+            await Buscar();
+        }
+    }
+
+    public async Task Buscar()
+    {
+        var encontrado = await prestamoService.Buscar(Prestamo.PrestamoId);
+        if (encontrado != null)
+            Prestamo = encontrado;
+
+        Encontro = true;
+    }
+
+    public async Task Guardar()
+    {
+        if (await Validar())
+            return;
+
+        var guardo = await prestamoService.Guardar(Prestamo);
+        Guardo = true;
+        Nuevo();
+        return;
+
+    }
+
+    public void Nuevo()
+    {
+        Prestamo = new Prestamo();
+    }
+
+    public async Task<bool> Validar()
+    {
+        var prestamo = await prestamoService.Listar(p => p.Concepto!.ToLower() == Prestamo.Concepto!.ToLower() && p.PrestamoId != Prestamo.PrestamoId);
+
+        Existe = prestamo.Any();
+        return Existe;
+    }
+
+    public async Task Eliminar()
+    {
+        await prestamoService.Eliminar(Prestamo.PrestamoId);
+        Elimino = true;
+        Nuevo();
+    }
 }
+
