@@ -1,0 +1,59 @@
+﻿@page "/Prestamo/Details/"
+@page "/Prestamo/Details/{PrestamoId:int}"
+@inject PrestamoServices prestamoService
+@inject NavigationManager navigationManager
+@inject IJSRuntime jsRuntime
+@rendermode InteractiveServer
+
+
+<PageTitle>Detalles del Prestamo</PageTitle>
+
+@if (prestamo != null)
+{
+    <div class="container">
+        <div class="card shadow-header">
+            <div class="card-header  bg-primary text-white text-center py-2 rounded">
+                <h3 class="text-center"><strong>Detalles del prestamo</strong></h3>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li><strong>RegistroId:</strong> @prestamo.PrestamoId</li>
+                                <li><strong>Descripcion:</strong> @prestamo.Deudor</li>
+                                <li><strong>Costo:</strong> @prestamo.Concepto</li>
+                                <li><strong>Ganancia:</strong> @prestamo.Monto</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="/Prestamo/Index" class="btn btn-primary">
+                    <span>Volver </span> <i class="bi bi-arrow-left mt-3" />
+                </a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>Prestamo no encontrado.</p>
+}
+
+
+@code {
+    [Parameter]
+    public int PrestamoId { get; set; }
+    public Prestamo? prestamo { get; set; } = new Prestamo();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        prestamo = await prestamoService.Buscar(PrestamoId);
+
+    }
+
+}
