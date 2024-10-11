@@ -16,4 +16,7 @@ public class Prestamo
 
     [Required (ErrorMessage = "Este Campo es obligatorio")]
     public decimal Monto { get; set; }
+
+    [Required(ErrorMessage = "Este Campo es obligatorio")]
+    public decimal Balance { get; set; }
 }
