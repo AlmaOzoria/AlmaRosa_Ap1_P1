@@ -10,4 +10,17 @@ public class Contexto : DbContext
 
     public DbSet<Prestamo> Prestamos { get; set; }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Prestamo>().HasData(
+            new Prestamo
+            {
+                //DeudorId = 1,
+                //Nombre = "Deudor A"
+            }
+           
+        );
+    }
 }
