@@ -21,9 +21,9 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="Deudor">Deudor:</label>
-                    <InputText @bind-Value="Prestamo.Deudor" class="form-control" />
-                    <ValidationMessage For="@(() => Prestamo.Deudor)" />
+                    <label class="form-label" for="DeudorId">DeudorId:</label>
+                    <InputNumber @bind-Value="Prestamo.DeudorId" class="form-control" />
+                    <ValidationMessage For="@(() => Prestamo.deudores.Nombres)" />
                 </div>
                 <div class="mb-3">
                     <label for="Costo" class="form-label">Concepto:</label>
