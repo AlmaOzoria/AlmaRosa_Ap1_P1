@@ -55,7 +55,7 @@
             {
                 <tr>
                     <td>@prestamo.PrestamoId</td>
-                    <td>@prestamo.Deudor</td>
+                    <td>@prestamo.deudores.Nombres</td>
                     <td>@prestamo.Concepto</td>
                     <td>@prestamo.Monto</td>
 
@@ -108,10 +108,9 @@
             {
                 ListaPrestamo = await prestamoService.Listar(p => p.PrestamoId == PrestamoId);
             }
-            else if (filtro == "deudor")
+            else if (filtro == "deudor" && int.TryParse(valorFiltro, out int DeudorId))
             {
-                string filtroMinuscula = valorFiltro.ToLower();
-                ListaPrestamo = await prestamoService.Listar(p => p.Deudor.ToLower().Contains(filtroMinuscula));
+                ListaPrestamo = await prestamoService.Listar(p => p.DeudorId == DeudorId);
 
             }
             else if (filtro == "concepto")
