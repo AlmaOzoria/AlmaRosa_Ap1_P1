@@ -60,6 +60,7 @@ namespace AlmaRosa_Ap1_P1.Services
         {
             return await _contexto.Prestamos
             .AsNoTracking()
+            .Include(p => p.deudores)
             .Where(criterio)
             .ToListAsync();
         }
