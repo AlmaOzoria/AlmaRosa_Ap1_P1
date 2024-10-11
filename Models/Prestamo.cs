@@ -9,12 +9,15 @@ public class Prestamo
     public int PrestamoId { get; set; }
 
     [Required (ErrorMessage = "Este Campo es obligatorio")]
-    public string Deudor { get; set; }
+    public string DeudorId { get; set; }
 
     [Required (ErrorMessage = "Este Campo es obligatorio")]
     public string Concepto { get; set; }
 
     [Required (ErrorMessage = "Este Campo es obligatorio")]
     public decimal Monto { get; set; }
+
+    [Required(ErrorMessage = "Este Campo es obligatorio")]
+    public decimal Balance { get; set; }
 
 }
