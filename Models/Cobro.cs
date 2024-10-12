@@ -10,7 +10,7 @@ public class Cobro
     public int CobroId { get; set; }
 
     [Required(ErrorMessage = "Debe de ser mayor que uno")]
-    public DateTime Fecha { get; set; }
+    public DateTime Fecha { get; set; } = DateTime.Now;
 
     [ForeignKey( "deudores")]
     public int DeudorId { get; set; }
