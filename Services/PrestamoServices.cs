@@ -65,7 +65,10 @@ namespace AlmaRosa_Ap1_P1.Services
             .ToListAsync();
         }
 
-
+        public async Task<List<Deudores>> ObtenerDeudores()
+        {
+            return await _contexto.Deudores.ToListAsync();
+        }
 
     }
 }
