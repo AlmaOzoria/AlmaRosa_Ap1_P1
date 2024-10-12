@@ -27,9 +27,18 @@ namespace AlmaRosa_Ap1_P1.Services
 
         private async Task<bool> Modificar(Prestamo prestamo)
         {
-            _contexto.Prestamos.Update(prestamo);
+                var prestamoExistente = await _contexto.Prestamos
+           .AsNoTracking()
+           .FirstOrDefaultAsync(p => p.PrestamoId == prestamo.PrestamoId);
+
+            if (prestamoExistente == null)
+            {
+                return false;
+            }
+            _contexto.Entry(prestamo).State = EntityState.Modified;
+
             var modificado = await _contexto.SaveChangesAsync() > 0;
-            _contexto.Entry(prestamo).State = EntityState.Detached;
+
             return modificado;
         }
 
