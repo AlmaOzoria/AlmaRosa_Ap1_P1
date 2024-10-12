@@ -1,0 +1,131 @@
+﻿@page "/Cobro/Index/"
+@rendermode InteractiveServer
+@inject CobroServices cobroService
+@inject NavigationManager navigation
+
+<EditForm Model="ListaCobros" class="border shadow-lg p-3 rounded">
+    <div class="card-header bg-primary text-white text-center py-2 rounded">
+        <h3 style="font-weight: bold;" class="mb-0 font-weight-bold">Consulta Cobro</h3>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3 align-items-end">
+
+            <div class="col-md-3">
+                <label for="Filtro" class="form-label">Filtrar por:</label>
+                <select @bind="filtro" class="form-select">
+                    <option value="id">ID</option>
+                    <option value="Cobro">Cobro</option>
+                    <option value="Deudor">Deudor</option>
+                    <option value="Fecha">Fecha</option>
+                    <option value="Monto">Monto</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label for="ValorFiltro" class="form-label">Búsqueda:</label>
+                <div class="input-group">
+                    <input @bind="valorFiltro" class="form-control" placeholder="Buscar" />
+                    <button @onclick="Buscar" class="btn btn-outline-primary" type="button">
+                        <span class="bi bi-search"></span> Buscar
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-3 text-end">
+                <a href="/Cobro/Create" class="btn btn-success" type="button"><span class="bi bi-plus-square mt-3"></span> Crear </a>
+            </div>
+        </div>
+    </div>
+
+
+    <table class="table table-bordered text-center">
+        <thead class="bg-primary text-white">
+            <tr>
+                <th>CostoId</th>
+                <th>DeudorId</th>
+                <th>Fecha</th>
+                <th>Monto</th>
+                <th>Ver</th>
+                <th>Editar</th>
+                <th>Eliminar</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var cobro in ListaCobros)
+            {
+                <tr>
+                    <td>@cobro.CobroId</td>
+                    <td>@cobro.deudores.Nombres</td>
+                    <td>@cobro.Fecha</td>
+                    <td>@cobro.Monto</td>
+
+                    <td>
+
+                        <a href="/Cobro/Details/@cobro.CobroId" style="border: none; background-color: transparent;" class="btn-detalle">
+                            <i class="bi bi-eye" style="font-size: 2rem;"></i>
+                        </a>
+
+                    </td>
+
+                    <td>
+
+                        <a href="/Cobro/Edit/@cobro.CobroId" style="border: none; background-color: transparent;" class="btn-editar">
+                            <span class="btn bi bi-pencil-square" style="font-size: 2rem;"></span>
+                        </a>
+                    </td>
+
+                    <td>
+
+                        <a href="/Cobro/Delete/@cobro.CobroId" style="border: none; background-color: transparent;" class="btn-eliminar">
+                            <i class="btn bi bi-trash" style="font-size: 2rem;"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="card-footer text-start">
+        <p> Total de  Prestamo: @ListaCobros.Count</p>
+    </div>
+</EditForm>
+
+@code {
+    public Cobro cobro { get; set; } = new Cobro();
+    public List<Cobro> ListaCobros = new List<Cobro>();
+    private string valorFiltro = "";
+    private string filtro = "Id";
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaCobros = await cobroService.Listar(c => true);
+    }
+
+    public async Task Buscar()
+    {
+        if (!string.IsNullOrWhiteSpace(valorFiltro))
+        {
+            if (filtro == "id" && int.TryParse(valorFiltro, out int CobroId))
+            {
+                ListaCobros = await cobroService.Listar(c => c.CobroId == CobroId);
+            }
+            else if (filtro == "deudor" && int.TryParse(valorFiltro, out int DeudorId))
+            {
+                ListaCobros = await cobroService.Listar(c => c.DeudorId == DeudorId);
+            }
+            else if (filtro == "fecha" && DateTime.TryParse(valorFiltro, out DateTime Fecha))
+            {
+                ListaCobros = await cobroService.Listar(c => c.Fecha.Date == Fecha.Date);
+            }
+            else if (filtro == "monto" && decimal.TryParse(valorFiltro, out decimal Monto))
+            {
+                ListaCobros = await cobroService.Listar(c => c.Monto == Monto);
+            }
+            else
+            {
+                ListaCobros = await cobroService.Listar(c => true);
+            }
+        }
+    }
+
+}
