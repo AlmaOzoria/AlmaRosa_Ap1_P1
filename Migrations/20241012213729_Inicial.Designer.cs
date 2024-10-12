@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlmaRosa_Ap1_P1.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20241012034030_Inicial")]
+    [Migration("20241012213729_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -85,15 +85,15 @@ namespace AlmaRosa_Ap1_P1.Migrations
                         new
                         {
                             DetalleId = 1,
-                            CobroId = 1,
-                            PrestamoId = 1,
+                            CobroId = 0,
+                            PrestamoId = 0,
                             ValorCobrado = 1000m
                         },
                         new
                         {
                             DetalleId = 2,
-                            CobroId = 2,
-                            PrestamoId = 2,
+                            CobroId = 0,
+                            PrestamoId = 0,
                             ValorCobrado = 2000m
                         });
                 });
@@ -203,7 +203,7 @@ namespace AlmaRosa_Ap1_P1.Migrations
             modelBuilder.Entity("AlmaRosa_Ap1_P1.Models.Prestamo", b =>
                 {
                     b.HasOne("AlmaRosa_Ap1_P1.Models.Deudores", "deudores")
-                        .WithMany()
+                        .WithMany("Prestamos")
                         .HasForeignKey("DeudorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -214,6 +214,11 @@ namespace AlmaRosa_Ap1_P1.Migrations
             modelBuilder.Entity("AlmaRosa_Ap1_P1.Models.Cobro", b =>
                 {
                     b.Navigation("CobrosDetalles");
+                });
+
+            modelBuilder.Entity("AlmaRosa_Ap1_P1.Models.Deudores", b =>
+                {
+                    b.Navigation("Prestamos");
                 });
 #pragma warning restore 612, 618
         }

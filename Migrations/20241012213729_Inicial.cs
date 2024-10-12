@@ -97,6 +97,15 @@ namespace AlmaRosa_Ap1_P1.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "CobroDetalles",
+                columns: new[] { "DetalleId", "CobroId", "PrestamoId", "ValorCobrado" },
+                values: new object[,]
+                {
+                    { 1, 0, 0, 1000m },
+                    { 2, 0, 0, 2000m }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Deudores",
                 columns: new[] { "DeudorId", "Nombres" },
                 values: new object[,]
@@ -121,15 +130,6 @@ namespace AlmaRosa_Ap1_P1.Migrations
                 {
                     { 1, 3000m, "Carro", 1, 5000m },
                     { 2, 5000m, "Carro", 2, 7000m }
-                });
-
-            migrationBuilder.InsertData(
-                table: "CobroDetalles",
-                columns: new[] { "DetalleId", "CobroId", "PrestamoId", "ValorCobrado" },
-                values: new object[,]
-                {
-                    { 1, 1, 1, 1000m },
-                    { 2, 2, 2, 2000m }
                 });
 
             migrationBuilder.CreateIndex(
