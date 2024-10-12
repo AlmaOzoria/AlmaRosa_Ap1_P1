@@ -36,6 +36,7 @@ namespace AlmaRosa_Ap1_P1.Services
         public async Task<Prestamo?> Buscar(int id)
         {
             return await _contexto.Prestamos
+            .Include(p => p.deudores)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.PrestamoId == id);
         }
