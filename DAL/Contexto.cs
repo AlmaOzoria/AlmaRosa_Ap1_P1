@@ -69,16 +69,12 @@ public class Contexto : DbContext
         modelBuilder.Entity<CobroDetalle>().HasData(
             new CobroDetalle
             {
-                DetalleId = 1,
-                CobroId = 1,  
-                PrestamoId = 1,  
+                DetalleId = 1, 
                 ValorCobrado = 1000m
             },
             new CobroDetalle
             {
-                DetalleId = 2,
-                CobroId = 2,  
-                PrestamoId = 2,  
+                DetalleId = 2, 
                 ValorCobrado = 2000m
             }
         );
