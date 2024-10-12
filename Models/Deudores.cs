@@ -11,5 +11,7 @@ namespace AlmaRosa_Ap1_P1.Models
         [Required(ErrorMessage = "Debe de ser mayor que uno")]
         public string Nombres { get; set; }
 
+        public ICollection<Prestamo> Prestamos { get; set; }
+
     }
 }
