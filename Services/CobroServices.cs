@@ -75,10 +75,20 @@ public class CobroServices
             .Where(criterio)
             .ToListAsync();
         }
-    public async Task<List<Deudores>> ObtenerDeudores()
-    {
-        return await _contexto.Deudores.ToListAsync();
-    }
+
+        
+        public async Task<List<Deudores>> ObtenerDeudores()
+        {
+        
+            return await _contexto.Deudores.ToListAsync();
+        
+        }
+        public async Task<List<Prestamo>> ObtenerPrestamo()
+        {
+        
+            return await _contexto.Prestamos.ToListAsync();
+        
+        }
 
 }
 
