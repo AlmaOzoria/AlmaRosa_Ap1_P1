@@ -23,10 +23,16 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="Deudor">DeudorId:</label>
-                    <InputNumber @bind-Value="Prestamo.DeudorId" class="form-control" />
-                    <ValidationMessage For="@(() => Prestamo.deudores.Nombres)" />
-                </div>
+                  <label for="Deudor" class="form-label">Deudor:</label>
+               <InputSelect @bind-Value="Prestamo.DeudorId" class="form-select" aria-label="DeudorId">
+                <option value="0">Selecciona un Deudor</option>
+                    @foreach (var item in ListaDeudores)
+                    {
+                        <option value="@item.DeudorId">@item.Nombres</option>
+                    }
+                </InputSelect>
+
+            </div
                 <div class="mb-3">
                     <label for="Concepto" class="form-label">Concepto:</label>
                     <InputText @bind-Value="Prestamo.Concepto" class="form-control" />
@@ -72,6 +78,7 @@
     public int? PrestamoId { get; set; }
     public Prestamo Prestamo { get; set; } = new Prestamo();
     public List<Prestamo> ListaPrestamo { get; set; } = new List<Prestamo>();
+    public List<Deudores> ListaDeudores { get; set; } = new List<Deudores>();
     public string Mensaje { get; set; } = string.Empty;
     public bool Existe { get; set; } = false;
     public bool Guardo { get; set; } = false;
@@ -80,6 +87,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+         ListaDeudores = await prestamoService.ObtenerDeudores();
         if (PrestamoId.HasValue)
         {
             Prestamo.PrestamoId = PrestamoId.Value;
