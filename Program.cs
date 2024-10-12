@@ -14,6 +14,7 @@ builder.Services.AddDbContext<Contexto>(Options => Options.UseSqlite(ConStr));
 
 builder.Services.AddScoped<PrestamoServices>();
 builder.Services.AddScoped<CobroServices>();
+builder.Services.AddScoped<CobroDetalleServices>();
 
 builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
 {
