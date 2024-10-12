@@ -82,15 +82,15 @@ namespace AlmaRosa_Ap1_P1.Migrations
                         new
                         {
                             DetalleId = 1,
-                            CobroId = 0,
-                            PrestamoId = 0,
+                            CobroId = 1,
+                            PrestamoId = 1,
                             ValorCobrado = 1000m
                         },
                         new
                         {
                             DetalleId = 2,
-                            CobroId = 0,
-                            PrestamoId = 0,
+                            CobroId = 2,
+                            PrestamoId = 2,
                             ValorCobrado = 2000m
                         });
                 });
@@ -189,7 +189,7 @@ namespace AlmaRosa_Ap1_P1.Migrations
                     b.HasOne("AlmaRosa_Ap1_P1.Models.Prestamo", "Prestamo")
                         .WithMany()
                         .HasForeignKey("PrestamoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Cobro");
