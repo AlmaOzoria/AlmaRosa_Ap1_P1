@@ -47,6 +47,7 @@ public class CobroServices
         {
             return await _contexto.Cobros
             .Include(p => p.deudores)
+            .Include(p => p.CobrosDetalles)
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.CobroId == id);
         }
