@@ -159,12 +159,18 @@
     {
         ListaDeudores = await cobroService.ObtenerDeudores();
         ListaPrestamo = await cobroService.ObtenerPrestamo();
-        ListaCobroDetalle = await cobroDetalleService.Listar(c => true);
-        if (CobroId > 0)
-        {
+        if(CobroId > 0)
+    {
             Cobro.CobroId = CobroId;
             await Buscar();
         }
+    else
+        {
+           
+            Cobro = new Cobro();
+        }
+
+        ListaCobroDetalle = new List<CobroDetalle>();
     }
 
     public async Task Buscar()
@@ -190,19 +196,32 @@
 
     public async Task GuardarDetalle()
     {
-        if (await Validar())
+        if (cobroDetalle.PrestamoId == 0 || cobroDetalle.ValorCobrado <= 0)
+        {
+            Mensaje = "Debe seleccionar un préstamo y un valor válido.";
             return;
+        }
+        ListaCobroDetalle.Add(new CobroDetalle
+        {
+                DetalleId = cobroDetalle.DetalleId,
+                CobroId = Cobro.CobroId,
+                PrestamoId = cobroDetalle.PrestamoId,
+                ValorCobrado = cobroDetalle.ValorCobrado,
+                     Prestamo = ListaPrestamo.FirstOrDefault(p => p.PrestamoId == cobroDetalle.PrestamoId)
+        });
 
-        var guardo = await cobroDetalleService.Guardar(cobroDetalle);
-        Guardo = true;
-        Nuevo();
-        return;
+        
+        cobroDetalle = new CobroDetalle();
+        Mensaje = "Detalle agregado correctamente.";
+
+        StateHasChanged();
 
     }
 
     public void Nuevo()
     {
         Cobro = new Cobro();
+        cobroDetalle = new CobroDetalle();
     }
 
     public async Task<bool> Validar()
@@ -218,16 +237,11 @@
     {
 
         var elimino = await cobroDetalleService.Eliminar(detalleId);
-
         if (elimino)
         {
-            OnInitializedAsync();
-            // var detalleAEliminar = ListaCobroDetalle.FirstOrDefault(d => d.DetalleId == detalleId);
-            // if (detalleAEliminar != null)
-            // {
-            //     ListaCobroDetalle.Remove(detalleAEliminar); 
-            //     StateHasChanged(); 
-            // }
+            ListaCobroDetalle = await cobroDetalleService.Listar(c => c.CobroId == Cobro.CobroId);
+            Mensaje = "Detalle eliminado correctamente.";
+            StateHasChanged(); 
         }
     }
 }
