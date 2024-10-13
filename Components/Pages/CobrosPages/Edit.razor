@@ -1,5 +1,234 @@
-﻿<h3>Edit</h3>
+﻿@page "/Cobro/Edit/"
+@page "/Cobro/Edit/{CobroId:int}"
+@inject CobroServices cobroService
+@inject CobroDetalleServices cobroDetalleService
+@inject NavigationManager navigationManager
+@inject IJSRuntime jsRuntime
+
+<PageTitle>Cobro </PageTitle>
+<EditForm Model="Cobro" OnValidSubmit="Guardar" FormName="cobroForm">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h3>Editar Cobro</h3>
+            </div>
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label for="Deudor" class="form-label">Deudor:</label>
+                    <InputSelect @bind-Value="Cobro.DeudorId" class="form-select" aria-label="DeudorId">
+                        <option value="0">Selecciona un Deudor</option>
+                        @foreach (var item in ListaDeudores)
+                        {
+                            <option value="@item.DeudorId">@item.Nombres</option>
+                        }
+                    </InputSelect>
+
+                </div>
+                <div class="mb-3">
+                    <label for="Fecha" class="form-label">Fecha:</label>
+                    <InputDate @bind-Value="Cobro.Fecha" class="form-control" />
+                    <ValidationMessage For="@(() => Cobro.Fecha)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="Monto" class="form-label">Monto:</label>
+                    <InputNumber @bind-Value="Cobro.Monto" class="form-control" />
+                    <ValidationMessage For="@(() => Cobro.Monto)" />
+                </div>
+                
+                @if (Existe)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        Ya existe un cobro con esa descripción
+                    </div>
+                }
+
+                @if (Guardo)
+                {
+                    <p class="text-success">
+                        El cobro se guardó exitosamente
+                    </p>
+                }
+                @if (Elimino)
+                {
+                    <p class="text-success">
+                        El cobro se eliminó exitosamente
+                    </p>
+                }
+
+                <div class="card-header">
+                    <h3>Registrar Cobro Detalle </h3>
+                </div>
+
+                <div style="display: flex; align-items: center;"
+                    <div class="col-3">
+                        <label for="Prestamo" class="form-label">Prestamo:</label>
+                        <InputSelect @bind-Value="cobroDetalle.PrestamoId" class="form-select" aria-label="PrestamoId">
+                            <option value="0">Selecciona un Concepto</option>
+                            @foreach (var item in ListaPrestamo)
+                            {
+                                    <option value="@item.PrestamoId">@item.Concepto</option>
+                            }
+                        </InputSelect>
+
+                    </div>
+
+                     <div class="col-2" style="margin: 20px;">
+                    <label for="ValorCobrado" class="form-label">Valor Cobrado:</label>
+                    <InputNumber @bind-Value="cobroDetalle.ValorCobrado" class="form-control" />
+                    <ValidationMessage For="@(() => cobroDetalle.ValorCobrado)" />
+                </div>
+
+                    <div class="col-2" style="margin-top: 32px">
+                        <button type="button" class="btn btn-primary" @onclick="GuardarDetalle">
+                            <span class="bi bi-plus-square mt-3"></span> Agregar
+                        </button>
+                    </div>
+
+                </div>
+
+                <table class="table table-bordered text-center">
+                    <thead class="bg-opacity-25 text-black">
+                        <tr>
+                            <th>DetalleId</th>
+                            <th>PrestamoId</th>
+                            <th>Concepto</th>
+                            <th>Valor Cobrado</th>
+                            <th>Eliminar</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        @foreach (var cobroDetalle in ListaCobroDetalle)
+                        {
+                            <tr>
+                                <td>@cobroDetalle.DetalleId</td>
+                                <td>@cobroDetalle.PrestamoId</td>
+                                <td>@cobroDetalle.Prestamo.Concepto</td>
+                                <td>@cobroDetalle.ValorCobrado</td>
+
+                                <td>
+                                    <button @onclick="() => EliminarDetalle (cobroDetalle.DetalleId)"
+                                            style="border: none; background-color: transparent;" class="btn-eliminar">
+                                        <i class="btn bi bi-trash" style="font-size: 2rem;"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary"><span class="bi bi-floppy mt-3"></span> Guardar </button>
+                <a href="/Cobro/Index" class="btn btn-primary"> <span>Volver</span> <i class="bi bi-arrow-left mt-3" /> </a>
+            </div>
+
+        </div>
+    </div>
+</EditForm>
 
 @code {
+    [Parameter]
+    public int CobroId { get; set; }
+    public Cobro Cobro { get; set; } = new Cobro();
+    public CobroDetalle cobroDetalle { get; set; } = new CobroDetalle();
+    public List<Deudores> ListaDeudores { get; set; } = new List<Deudores>();
+    public List<Cobro> ListaCobros { get; set; } = new List<Cobro>();
+    public List<CobroDetalle> ListaCobroDetalle { get; set; } = new List<CobroDetalle>();
+    public List<Prestamo> ListaPrestamo { get; set; } = new List<Prestamo>();
+    public string Mensaje { get; set; } = string.Empty;
+    public bool Existe { get; set; } = false;
+    public bool Guardo { get; set; } = false;
+    public bool Elimino { get; set; } = false;
+    public bool Encontro { get; set; } = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        ListaDeudores = await cobroService.ObtenerDeudores();
+        ListaPrestamo = await cobroService.ObtenerPrestamo();
+        ListaCobroDetalle = await cobroDetalleService.Listar(c => true);
+        if (CobroId > 0)
+        {
+            Cobro.CobroId = CobroId;
+            await Buscar();
+        }
+    }
+
+    public async Task Buscar()
+    {
+        Existe = false;
+        var encontro = await cobroService.Buscar(Cobro.CobroId);
+
+
+        if (encontro != null)
+        {
+            Cobro = encontro;
+        }
+        else
+        {
+            Nuevo();
+        }
+    }
+
+
+    public async Task Guardar()
+    {
+        if (await Validar())
+        {
+            return;
+        }
+        var guardo = await cobroService.Guardar(Cobro);
+        if (guardo)
+        {
+            Guardo = true;
+
+        }
+    }
+
+    public async Task GuardarDetalle()
+    {
+        if (await Validar())
+            return;
+
+        var guardo = await cobroDetalleService.Guardar(cobroDetalle);
+        Guardo = true;
+        Nuevo();
+        return;
+
+    }
+
+    public void Nuevo()
+    {
+        this.Cobro = new Cobro();
+        Existe = false;
+        Mensaje = string.Empty;
+    }
+
+    public async Task<bool> Validar()
+    {
+        var cobro = await cobroService.Listar(c => c.CobroId! == Cobro.CobroId! && c.CobroId != Cobro.CobroId);
+
+        Existe = cobro.Any();
+        return Existe;
+    }
+
+    public async Task EliminarDetalle(int detalleId)
+    {
+
+        var elimino = await cobroDetalleService.Eliminar(detalleId);
+
+        if (elimino)
+        {
+            OnInitializedAsync();
+            // var detalleAEliminar = ListaCobroDetalle.FirstOrDefault(d => d.DetalleId == detalleId);
+            // if (detalleAEliminar != null)
+            // {
+            //     ListaCobroDetalle.Remove(detalleAEliminar);
+            //     StateHasChanged();
+            // }
+        }
+    }
 }
