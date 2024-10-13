@@ -1,38 +1,35 @@
-﻿@page "/Prestamo/Delete/"
-@page "/Prestamo/Delete/{PrestamoId:int}"
-@inject PrestamoServices prestamoService
+﻿@page "/Cobro/Delete/"
+@page "/Cobro/Delete/{CobroId:int}"
+@inject CobroServices cobroService
+@inject CobroDetalleServices cobroDetalleService
 @inject NavigationManager navigationManager
 @inject IJSRuntime jsRuntime
-
 @rendermode InteractiveServer
 
-<h3>Eliminar Prestamo</h3>
 
-@if (Prestamo != null)
+@if (Cobro != null)
 {
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Detalles de Prestamo</h5>
-            <dl class="row">
-                <dt class="col-sm-3">PrestamoId:</dt>
-                <dd class="col-sm-9">@Prestamo.Result?.PrestamoId</dd>
-
-                <dt class="col-sm-3">DeudorId:</dt>
-                <dd class="col-sm-9">@Prestamo.Result?.deudores.Nombres</dd>
-
-                <dt class="col-sm-3">Concepto:</dt>
-                <dd class="col-sm-9">@Prestamo.Result?.Concepto</dd>
-
-                <dt class="col-sm-3">Monto:</dt>
-                <dd class="col-sm-9">@Prestamo.Result?.Monto</dd>
-
-
-            </dl>
-
-            <button type="button" class="btn btn-danger" @onclick="Eliminar">Eliminar</button>
-            <a href="/Prestamo/Index" class="btn btn-primary">
-                <span>Volver </span> <i class="bi bi-arrow-left mt-3" />
-            </a>
+    <div class="container">
+        <div class="card shadow-lg rounded">
+            <div class="card-header  bg-primary text-white text-center py-2 rounded">
+                <h3 class="text-center"><strong>Eliminar del Cobro</strong></h3>
+            </div>
+            <div class="container">
+                <ul class="list-unstyled">
+                    <li><strong>CobroId:</strong> @Cobro.CobroId</li>
+                    <li><strong>Fecha:</strong> @Cobro.Fecha.ToString("dd/MM/yyyy")</li>
+                    <li><strong>DeudorId:</strong> @Cobro?.deudores?.Nombres</li>
+                    <li><strong>Monto:</strong> @Cobro?.Monto</li>
+                    <li><strong>Concepto:</strong> @CobroDetalle?.Prestamo?.Concepto</li>
+                    <li><strong>Valor Cobrado:</strong> @CobroDetalle?.ValorCobrado</li>
+                </ul>
+            </div>
+            <div class="card-footer">
+                <button type="button" class="btn btn-danger" @onclick="Eliminar">Eliminar</button>
+                <a href="/Cobro/Index" class="btn btn-primary">
+                    <span>Volver </span> <i class="bi bi-arrow-left mt-3" />
+                </a>
+            </div>
         </div>
 
     </div>
@@ -41,34 +38,44 @@
 }
 else
 {
-    <p class="alert alert-danger">No se encontró el prestamo</p>
+    <p class="alert alert-danger">No se encontró el cobro</p>
 }
 
 
 @code {
     [Parameter]
-    public int PrestamoId { get; set; }
+    public int CobroId { get; set; }
+    public Cobro? Cobro { get; set; }
+    public CobroDetalle? CobroDetalle { get; set; }
 
-    public Task<Prestamo?> Prestamo { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Prestamo = prestamoService.Buscar(PrestamoId);
-        await Prestamo;
+
+        Cobro = await cobroService.Buscar(CobroId);
+        CobroDetalle = await cobroDetalleService.Buscar(CobroId);
+
+        if (Cobro == null)
+        {
+            await jsRuntime.InvokeVoidAsync("El cobro no fue encontrado.");
+            Volver();
+        }
     }
 
     public async Task Eliminar()
     {
-        var prestamo = await Prestamo;
-        if (prestamo != null)
+        if (Cobro != null)
         {
-            var eliminado = prestamoService.Eliminar(prestamo.PrestamoId);
-            Volver();
+            var eliminado = await cobroService.Eliminar(Cobro.CobroId);
+            if (eliminado)
+                Volver();
+            else
+                await jsRuntime.InvokeVoidAsync("No se pudo eliminar el cobro.");
         }
     }
 
     public void Volver()
     {
-        navigationManager.NavigateTo("/Prestamo/Index");
+        navigationManager.NavigateTo("/Cobro/Index");
     }
 }
