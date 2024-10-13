@@ -12,7 +12,7 @@
 @if (Cobro != null)
 {
     <div class="container">
-        <div class="card shadow-header">
+        <div class="card shadow-lg rounded">
             <div class="card-header  bg-primary text-white text-center py-2 rounded">
                 <h3 class="text-center"><strong>Detalles del Cobro</strong></h3>
             </div>
@@ -23,11 +23,11 @@
                         <div class="card-body">
                             <ul class="list-unstyled">
                                 <li><strong>CobroId:</strong> @Cobro.CobroId</li>
-                                <li><strong>Fecha:</strong> @Cobro.Fecha</li>
-                                <li><strong>DeudorId:</strong> @Cobro.deudores.Nombres</li>
+                                <li><strong>Fecha:</strong> @Cobro.Fecha.ToString("dd/MM/yyyy")</li>
+                                <li><strong>DeudorId:</strong> @Cobro?.deudores?.Nombres ?? "N/A"</li>
                                 <li><strong>Monto:</strong> @Cobro.Monto</li>
-                                <li><strong>Concepto:</strong> @CobroDetalle.Prestamo.Concepto</li>
-                                <li><strong>Valor Concepto:</strong> @CobroDetalle.ValorCobrado</li>
+                                <li><strong>Concepto:</strong> @CobroDetalle?.Prestamo?.Concepto </li>
+                                <li><strong>Valor Cobrado:</strong> @CobroDetalle?.ValorCobrado </li>
                             </ul>
                         </div>
                     </div>
