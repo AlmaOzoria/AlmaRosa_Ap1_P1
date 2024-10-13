@@ -150,14 +150,16 @@
         ListaDeudores = await cobroService.ObtenerDeudores();
         ListaPrestamo = await cobroService.ObtenerPrestamo();
         ListaCobroDetalle = await cobroDetalleService.Listar(c => true);
+       
         if (CobroId > 0)
         {
+            
             Cobro.CobroId = CobroId;
             await Buscar();
         }
         else
         {
-
+            
             Cobro = new Cobro();
         }
 
