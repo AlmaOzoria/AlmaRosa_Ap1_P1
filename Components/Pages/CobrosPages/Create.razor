@@ -160,13 +160,13 @@
         ListaDeudores = await cobroService.ObtenerDeudores();
         ListaPrestamo = await cobroService.ObtenerPrestamo();
         if(CobroId > 0)
-    {
+        {
             Cobro.CobroId = CobroId;
             await Buscar();
         }
-    else
+        else
         {
-           
+
             Cobro = new Cobro();
         }
 
@@ -184,6 +184,7 @@
 
     public async Task Guardar()
     {
+        Cobro.CobrosDetalles = ListaCobroDetalle;
         if (await Validar())
             return;
 
