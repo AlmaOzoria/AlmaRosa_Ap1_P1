@@ -155,6 +155,13 @@
             Cobro.CobroId = CobroId;
             await Buscar();
         }
+        else
+        {
+
+            Cobro = new Cobro();
+        }
+
+        ListaCobroDetalle = new List<CobroDetalle>();
     }
 
     public async Task Buscar()
@@ -190,19 +197,32 @@
 
     public async Task GuardarDetalle()
     {
-        if (await Validar())
+        if (cobroDetalle.PrestamoId == 0 || cobroDetalle.ValorCobrado <= 0)
+        {
+            Mensaje = "Debe seleccionar un préstamo y un valor válido.";
             return;
+        }
+        ListaCobroDetalle.Add(new CobroDetalle
+            {
+                DetalleId = cobroDetalle.DetalleId,
+                CobroId = Cobro.CobroId,
+                PrestamoId = cobroDetalle.PrestamoId,
+                ValorCobrado = cobroDetalle.ValorCobrado,
+                Prestamo = ListaPrestamo.FirstOrDefault(p => p.PrestamoId == cobroDetalle.PrestamoId)
+            });
 
-        var guardo = await cobroDetalleService.Guardar(cobroDetalle);
-        Guardo = true;
-        Nuevo();
-        return;
+
+        cobroDetalle = new CobroDetalle();
+        Mensaje = "Detalle agregado correctamente.";
+
+        StateHasChanged();
 
     }
 
     public void Nuevo()
     {
         this.Cobro = new Cobro();
+        cobroDetalle = new CobroDetalle();
         Existe = false;
         Mensaje = string.Empty;
     }
@@ -219,16 +239,11 @@
     {
 
         var elimino = await cobroDetalleService.Eliminar(detalleId);
-
         if (elimino)
         {
-            OnInitializedAsync();
-            // var detalleAEliminar = ListaCobroDetalle.FirstOrDefault(d => d.DetalleId == detalleId);
-            // if (detalleAEliminar != null)
-            // {
-            //     ListaCobroDetalle.Remove(detalleAEliminar);
-            //     StateHasChanged();
-            // }
+            ListaCobroDetalle.RemoveAll(d => d.DetalleId == detalleId);
+            Mensaje = "Detalle eliminado correctamente.";
+            StateHasChanged();
         }
     }
 }
