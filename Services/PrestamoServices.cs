@@ -27,15 +27,25 @@ namespace AlmaRosa_Ap1_P1.Services
 
         private async Task<bool> Modificar(Prestamo prestamo)
         {
-            _contexto.Prestamos.Update(prestamo);
+                var prestamoExistente = await _contexto.Prestamos
+           .AsNoTracking()
+           .FirstOrDefaultAsync(p => p.PrestamoId == prestamo.PrestamoId);
+
+            if (prestamoExistente == null)
+            {
+                return false;
+            }
+            _contexto.Entry(prestamo).State = EntityState.Modified;
+
             var modificado = await _contexto.SaveChangesAsync() > 0;
-            _contexto.Entry(prestamo).State = EntityState.Detached;
+
             return modificado;
         }
 
         public async Task<Prestamo?> Buscar(int id)
         {
             return await _contexto.Prestamos
+            .Include(p => p.deudores)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.PrestamoId == id);
         }
@@ -60,11 +70,15 @@ namespace AlmaRosa_Ap1_P1.Services
         {
             return await _contexto.Prestamos
             .AsNoTracking()
+            .Include(p => p.deudores)
             .Where(criterio)
             .ToListAsync();
         }
 
-
+        public async Task<List<Deudores>> ObtenerDeudores()
+        {
+            return await _contexto.Deudores.ToListAsync();
+        }
 
     }
 }

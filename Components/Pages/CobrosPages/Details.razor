@@ -1,0 +1,70 @@
+﻿@page "/Cobro/Details/"
+@page "/Cobro/Details/{CobroId:int}"
+@inject CobroServices cobroService
+@inject CobroDetalleServices cobroDetalleService
+@inject NavigationManager navigationManager
+@inject IJSRuntime jsRuntime
+@rendermode InteractiveServer
+
+
+<PageTitle>Detalles del Cobro</PageTitle>
+
+@if (Cobro != null)
+{
+    <div class="container">
+        <div class="card shadow-lg rounded">
+            <div class="card-header  bg-primary text-white text-center py-2 rounded">
+                <h3 class="text-center"><strong>Detalles del Cobro</strong></h3>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                <li><strong>CobroId:</strong> @Cobro.CobroId</li>
+                                <li><strong>Fecha:</strong> @Cobro.Fecha.ToString("dd/MM/yyyy")</li>
+                                <li><strong>DeudorId:</strong> @Cobro?.deudores?.Nombres ?? "N/A"</li>
+                                <li><strong>Monto:</strong> @Cobro.Monto</li>
+                                <li><strong>Concepto:</strong> @CobroDetalle?.Prestamo?.Concepto </li>
+                                <li><strong>Valor Cobrado:</strong> @CobroDetalle?.ValorCobrado </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="/Cobro/Index" class="btn btn-primary">
+                    <span>Volver </span> <i class="bi bi-arrow-left mt-3" />
+                </a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>Cobro no encontrado.</p>
+}
+
+
+@code {
+    [Parameter]
+    public int CobroId { get; set; }
+    public Cobro? Cobro { get; set; }
+    public CobroDetalle? CobroDetalle { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Cobro = await cobroService.Buscar(CobroId);
+        CobroDetalle = await cobroDetalleService.Buscar(CobroId);
+
+        if (Cobro == null)
+        {
+            await jsRuntime.InvokeVoidAsync("El cobro no fue encontrado.");
+            
+        }
+
+    }
+
+}
